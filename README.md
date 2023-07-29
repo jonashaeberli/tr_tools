@@ -8,6 +8,6 @@ TODO:
     - Add function to unlock memory (pls only with additional user confirmation)
     - Add function to write the values from the configuration table directly to encoder
     - Add function that reads all values again using readMemory() function and compares them if they are identical to configuration table (all printed for debugging)
-    - After comparing ask user to Confirm writing to permanent memory
+    - After comparing without difference ask user to Confirm writing to permanent memory
   - Add selection on initial menu for selection reading error memory and then read it plus print all out
   - fix all other noticed bugs + make user experience better...
