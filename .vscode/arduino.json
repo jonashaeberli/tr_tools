@@ -1,0 +1,4 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "Arduino\\configure_rls_orbis\\configure_rls_orbis.ino"
+}
