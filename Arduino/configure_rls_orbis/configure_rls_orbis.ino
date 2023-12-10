@@ -46,7 +46,7 @@ uint16_t readAngle(){
 void setMultiturn(){
   int readVector[] = {0xCD, 0xEF, 0x89, 0xAB, 0x4D, 0x00, 0x00, 0x80, 0x00}; // Set multiturn to 32768 (0x8000) -> this is zero in motorcontroller
   int arraySize = sizeof(readVector) / sizeof(readVector[0]);
-  spiTransaction(readVector, arraySize);
+  spiTransactionSingle(readVector, arraySize);
 }
 
 void setZeroOffset(){
@@ -60,13 +60,13 @@ void setZeroOffset(){
 
   int readVector[] = {0xCD, 0xEF, 0x89, 0xAB, 0x5A, 0x00, 0x00, highByte, lowByte}; // Set zero offset to recently read encoder position
   int arraySize = sizeof(readVector) / sizeof(readVector[0]);
-  spiTransaction(readVector, arraySize);
+  spiTransactionSingle(readVector, arraySize);
 }
 
 void safeConfig(){
   int readVector[] = {0xCD, 0xEF, 0x89, 0xAB, 0x63}; // safe the configured settings to non-volatile memory
   int arraySize = sizeof(readVector) / sizeof(readVector[0]);
-  spiTransaction(readVector, arraySize);
+  spiTransactionSingle(readVector, arraySize);
 }
 
 uint64_t spiTransaction(int SpiCommand[], uint8_t requestedSize) {
@@ -86,4 +86,21 @@ uint64_t spiTransaction(int SpiCommand[], uint8_t requestedSize) {
 
   digitalWrite(encoderNCS, HIGH); // Disable the encoder by pulling NCS high
   return response;
+}
+
+void spiTransactionSingle(int SpiCommand[], uint8_t requestedSize) {
+
+  uint64_t response = 0x0;
+
+  for (int i = 0; i < requestedSize; i++) {
+    digitalWrite(encoderNCS, LOW);
+    delayMicroseconds(10);
+
+    SPI.beginTransaction(SPISettings(3000, MSBFIRST, SPI_MODE1)); // CPOL=0, CPHA=1
+    response = (response << 8) | SPI.transfer(SpiCommand[i]);
+
+    SPI.endTransaction();
+
+    digitalWrite(encoderNCS, HIGH); // Disable the encoder by pulling NCS high
+  }
 }
